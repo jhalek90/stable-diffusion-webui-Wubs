@@ -19,16 +19,23 @@ recorded_results_limit = 2
 
 def start_task(id_task):
     global current_task
-
-    current_task = id_task
-    pending_tasks.pop(id_task, None)
+    if current_task == None: #added
+        current_task = id_task #Wubs
+        pending_tasks.pop(id_task, None) #Wubs
 
 
 def finish_task(id_task):
     global current_task
 
-    if current_task == id_task:
-        current_task = None
+    if current_task == id_task:#Wubs
+        if not pending_tasks:#Wubs
+            current_task = None#Wubs
+        else:#Wubs
+            pending_tasks.pop(id_task,None)#Wubs
+            if len(list(pending_tasks.keys()))>0:#Wubs
+                current_task = list(pending_tasks.keys())[0]#Wubs
+            else:
+                current_task = None#Wubs
 
     finished_tasks.append(id_task)
     if len(finished_tasks) > 16:
@@ -43,6 +50,8 @@ def record_results(id_task, res):
 
 def add_task_to_queue(id_job):
     pending_tasks[id_job] = time.time()
+    print("Adding Job to pending tasks:  " + id_job)
+    print(pending_tasks)
 
 
 class ProgressRequest(BaseModel):
@@ -70,7 +79,11 @@ def progressapi(req: ProgressRequest):
     active = req.id_task == current_task
     queued = req.id_task in pending_tasks
     completed = req.id_task in finished_tasks
+    print('processing current task in queue: ')#Wubs
+    print(current_task)#Wubs
 
+    print('current queued tasks: ')#Wubs
+    print(pending_tasks)#Wubs
     if not active:
         textinfo = "Waiting..."
         if queued:
